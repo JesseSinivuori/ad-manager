@@ -27,5 +27,5 @@ jobs:
 
       - name: Jest
         env:
-          credentials: ${{ secrets.POSTGRES_URL }}
+          POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
         run: npm run jest
