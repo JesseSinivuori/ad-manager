@@ -1,10 +1,6 @@
 import Link from "next/link";
 import { button } from "./style";
 import Image from "next/image";
-import facebook from "@/public/facebook.svg";
-import instagram from "@/public/instagram.svg";
-import twitter from "@/public/twitter.svg";
-import tiktok from "@/public/tiktok.svg";
 
 export default function Home() {
   return (
@@ -12,13 +8,17 @@ export default function Home() {
       <div className="flex flex-col  items-center justify-center sm:pt-16 pt-8">
         <div className="relative w-full z-[-1] m-8 sm:m-0">
           <Image
-            src={twitter}
+            src={"/twitter.svg"}
             alt={"twitter logo"}
+            width={80}
+            height={80}
             className="absolute sm:-left-20 -left-0 -rotate-12 md:w-[80px] md:h-[80px] w-[40px] h-[40px]"
           />
           <Image
-            src={tiktok}
+            src={"/tiktok.svg"}
             alt={"tiktok logo"}
+            width={80}
+            height={80}
             className="absolute sm:-right-20 right-0 rotate-12 md:w-[80px] md:h-[80px] w-[40px] h-[40px]"
           />
         </div>
@@ -42,14 +42,18 @@ export default function Home() {
         </h1>
         <div className="relative w-full z-[-1] m-8 sm:m-0">
           <Image
-            src={facebook}
+            src={"/facebook.svg"}
             alt={"facebook logo"}
+            width={80}
+            height={80}
             className="absolute sm:-left-20 left-0 -rotate-12 md:w-[80px] md:h-[80px] w-[40px] h-[40px]"
           />
 
           <Image
-            src={instagram}
+            src={"/instagram.svg"}
             alt={"instagram logo"}
+            width={80}
+            height={80}
             className="absolute sm:-right-20 right-0 rotate-12 md:w-[80px] md:h-[80px] w-[40px] h-[40px]"
           />
         </div>
