@@ -1,0 +1,40 @@
+@baseUrl = http://localhost:3000/api/campaigns
+
+### Get all campaigns
+GET {{baseUrl}}
+
+### Delete all campaigns
+DELETE {{baseUrl}}
+
+### Post a campaign
+# @name post
+@id = {{post.response.body.id}}
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+    "name": "NEW TEST",
+    "startDate": "2023-06-22T17:23:25.512Z",
+    "endDate": "2023-07-22T17:23:25.512Z",
+    "targetAudience": "Audience 3",
+    "budget": 30000,
+    "status": "active",
+    "adGroups": "Group 3.1,Group 3.2,Group 3.3",
+    "keywords": "Keyword 3.1,Keyword 3.2,Keyword 3.3"
+}
+
+### Update a campaign
+@id = {{post.response.body.id}}
+PUT {{baseUrl}}/{{id}}
+Content-Type: application/json
+
+{
+  "name": "updated",
+  "startDate": "2023-06-20",
+  "endDate": "2023-07-20",
+  "targetAudience": "people",
+  "budget": 10000
+}
+
+### Delete a campaign
+DELETE {{baseUrl}}/{{id}}
