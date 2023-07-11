@@ -38,6 +38,18 @@ export default function CampaignsGrid() {
     }
   }, [data, setCampaigns]);
 
+  useEffect(() => {
+    if (!data && campaigns.length === 0) {
+      toast.success(
+        "The campaigns will load slowly on the first time, due to cold start.",
+        {
+          icon: "👋",
+          duration: 6000,
+        }
+      );
+    }
+  }, [data, campaigns]);
+
   if (isLoading) return <Loading />;
   if (error) return <Error />;
 
