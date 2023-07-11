@@ -12,6 +12,7 @@ export default function Home() {
             alt={"twitter logo"}
             width={80}
             height={80}
+            priority
             className="absolute sm:-left-20 -left-0 -rotate-12 md:w-[80px] md:h-[80px] w-[40px] h-[40px]"
           />
           <Image
@@ -19,6 +20,7 @@ export default function Home() {
             alt={"tiktok logo"}
             width={80}
             height={80}
+            priority
             className="absolute sm:-right-20 right-0 rotate-12 md:w-[80px] md:h-[80px] w-[40px] h-[40px]"
           />
         </div>
@@ -46,6 +48,7 @@ export default function Home() {
             alt={"facebook logo"}
             width={80}
             height={80}
+            priority
             className="absolute sm:-left-20 left-0 -rotate-12 md:w-[80px] md:h-[80px] w-[40px] h-[40px]"
           />
 
@@ -54,10 +57,10 @@ export default function Home() {
             alt={"instagram logo"}
             width={80}
             height={80}
+            priority
             className="absolute sm:-right-20 right-0 rotate-12 md:w-[80px] md:h-[80px] w-[40px] h-[40px]"
           />
         </div>
-
         <Link href={"/campaigns"} className={`${button.violet} m-8`}>
           Open App
         </Link>
