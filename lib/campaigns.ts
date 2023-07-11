@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Campaign, NewCampaign } from "./schema/campaigns";
 
-const baseUrl = "http://localhost:3000/api/campaigns";
+const baseUrl = "/api/campaigns";
 
 export const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
