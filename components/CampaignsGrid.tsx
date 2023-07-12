@@ -50,7 +50,6 @@ export default function CampaignsGrid() {
     }
   }, [data, campaigns]);
 
-  if (isLoading) return <Loading />;
   if (error) return <Error />;
 
   const columns: GridColDef[] = [

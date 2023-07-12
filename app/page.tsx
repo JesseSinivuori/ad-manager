@@ -51,7 +51,6 @@ export default function Home() {
             priority
             className="absolute sm:-left-20 left-0 -rotate-12 md:w-[80px] md:h-[80px] w-[40px] h-[40px]"
           />
-
           <Image
             src={"/instagram.svg"}
             alt={"instagram logo"}

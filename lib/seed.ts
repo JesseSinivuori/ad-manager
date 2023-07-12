@@ -1,4 +1,7 @@
 import { db, sql } from "@/lib/kysely";
+import dayjs from "dayjs";
+import { CampaignMetricsSchema } from "./schema/campaignMetrics";
+import { NewCampaignSchema } from "./schema/campaigns";
 
 export async function seed() {
   console.log(`Starting to create "campaigns" table...`);
@@ -51,83 +54,54 @@ export async function seed() {
 
   console.log(`Created "campaignMetrics" table`);
 
-  const addCampaigns = await db
-    .insertInto("campaigns")
-    .values([
-      {
-        name: "Campaign 1",
-        startDate: new Date().toISOString(),
-        endDate: new Date().toISOString(),
-        targetAudience: "Audience 1",
-        budget: 10000,
+  const campaigns = Array(30)
+    .fill({})
+    .map((_c, i) => {
+      return NewCampaignSchema.parse({
+        name: `Campaign ${i}`,
+        startDate: dayjs().add(i).toISOString(),
+        endDate: dayjs()
+          .add(7 + i)
+          .toISOString(),
+        targetAudience: `Audience ${i}`,
+        budget: 1000 * i,
         status: "active",
         adGroups: JSON.stringify(["Group 1", "Group 2", "Group 3"]),
         keywords: JSON.stringify(["Keyword 1", "Keyword 2", "Keyword 3"]),
-      },
-      {
-        name: "Campaign 2",
-        startDate: new Date().toISOString(),
-        endDate: new Date().toISOString(),
-        targetAudience: "Audience 2",
-        budget: 20000,
-        status: "active",
-        adGroups: JSON.stringify(["Group 2.1", "Group 2.2", "Group 2.3"]),
-        keywords: JSON.stringify(["Keyword 2.1", "Keyword 2.2", "Keyword 2.3"]),
-      },
-      {
-        name: "Campaign 3",
-        startDate: new Date().toISOString(),
-        endDate: new Date().toISOString(),
-        targetAudience: "Audience 3",
-        budget: 30000,
-        status: "active",
-        adGroups: JSON.stringify(["Group 3.1", "Group 3.2", "Group 3.3"]),
-        keywords: JSON.stringify(["Keyword 3.1", "Keyword 3.2", "Keyword 3.3"]),
-      },
-    ])
+      });
+    });
+
+  const addCampaigns = await db
+    .insertInto("campaigns")
+    .values(campaigns)
     .returning("id")
     .execute();
 
+  const campaignMetrics = Array(30)
+    .fill({})
+    .map((_m, i) => {
+      console.log(addCampaigns);
+      return CampaignMetricsSchema.parse({
+        campaignId: addCampaigns[i].id,
+        impressions: 10000 * i,
+        clicks: 1000 * i,
+        ctr: 0.1 * i,
+        averageCpc: 2.0 * i,
+        conversions: 8000 * i,
+        costPerConversion: 2.5 * i,
+        conversionRate: 0.8 * i,
+      });
+    });
+
   const addCampaignMetrics = await db
     .insertInto("campaignMetrics")
-    .values([
-      {
-        campaignId: addCampaigns[0].id!,
-        impressions: 100000,
-        clicks: 10000,
-        ctr: 0.1,
-        averageCpc: 2.0,
-        conversions: 8000,
-        costPerConversion: 2.5,
-        conversionRate: 0.8,
-      },
-      {
-        campaignId: addCampaigns[1].id!,
-        impressions: 200000,
-        clicks: 20000,
-        ctr: 0.1,
-        averageCpc: 2.0,
-        conversions: 16000,
-        costPerConversion: 2.5,
-        conversionRate: 0.8,
-      },
-      {
-        campaignId: addCampaigns[2].id!,
-        impressions: 300000,
-        clicks: 30000,
-        ctr: 0.1,
-        averageCpc: 2.0,
-        conversions: 24000,
-        costPerConversion: 2.5,
-        conversionRate: 0.8,
-      },
-    ])
+    .values(campaignMetrics)
     .execute();
 
   return {
     createCampaignsTable,
     addCampaigns,
     createCampaignMetricsTable,
-    addCampaignMetrics,
+    //addCampaignMetrics,
   };
 }

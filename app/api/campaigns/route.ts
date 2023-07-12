@@ -7,6 +7,7 @@ import {
   convertToCampaignAndValidate,
 } from "@/lib/schema/campaigns";
 import { NextRequest, NextResponse } from "next/server";
+import { seed } from "@/lib/seed";
 
 export async function GET(req: NextRequest, res: NextResponse) {
   try {
