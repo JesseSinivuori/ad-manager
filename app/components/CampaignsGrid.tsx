@@ -8,13 +8,13 @@ import {
   deleteCampaignById,
   fetcher,
   updateCampaignById,
-} from "@/lib/campaigns";
+} from "@/app/lib/fetch/campaigns";
 import EditCampaignButton from "./EditCampaignButton";
-import { NewCampaign, NewCampaignSchema } from "@/lib/schema/campaigns";
+import { NewCampaign, NewCampaignSchema } from "@/app/lib/schema/campaigns";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useSWR from "swr";
-import { useCampaignsContext } from "@/providers/CampaignsProvider";
+import { useCampaignsContext } from "@/app/providers/CampaignsProvider";
 import Loading from "@/app/loading";
 import Error from "@/app/error";
 
@@ -25,7 +25,7 @@ export default function CampaignsGrid() {
   });
   const { page, pageSize } = paginationModel;
 
-  const { data, isLoading, error } = useSWR(
+  const { data, error } = useSWR(
     `/api/campaigns?page=${page}&limit=${pageSize}`,
     fetcher
   );

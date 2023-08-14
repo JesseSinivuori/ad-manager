@@ -2,8 +2,7 @@
 import { SetStateAction, useEffect, useMemo, useState } from "react";
 import Dialog from "./UI/Dialog";
 import dayjs from "dayjs";
-import { NewCampaign, NewCampaignSchema } from "@/lib/schema/campaigns";
-import toast from "react-hot-toast";
+import { NewCampaign, NewCampaignSchema } from "@/app/lib/schema/campaigns";
 
 type CampaignDialogProps = {
   name?: {

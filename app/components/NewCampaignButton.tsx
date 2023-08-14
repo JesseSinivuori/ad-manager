@@ -3,9 +3,9 @@ import { button } from "@/app/style";
 import { Button } from "./UI/Button";
 import { useState } from "react";
 import CampaignDialog from "./CampaignDialog";
-import { createCampaign } from "@/lib/campaigns";
-import { useCampaignsContext } from "@/providers/CampaignsProvider";
-import { NewCampaign, NewCampaignSchema } from "@/lib/schema/campaigns";
+import { createCampaign } from "@/app/lib/fetch/campaigns";
+import { useCampaignsContext } from "@/app/providers/CampaignsProvider";
+import { NewCampaign, NewCampaignSchema } from "@/app/lib/schema/campaigns";
 import toast from "react-hot-toast";
 
 export default function NewCampaignButton() {

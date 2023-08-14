@@ -1,5 +1,5 @@
 "use client";
-import { Campaign } from "@/lib/schema/campaigns";
+import { Campaign } from "@/app/lib/schema/campaigns";
 import { createContext, useContext, useState } from "react";
 
 type CampaignsContextType = {

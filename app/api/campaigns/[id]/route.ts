@@ -1,8 +1,8 @@
-import { db } from "@/lib/kysely";
+import { db } from "@/app/lib/kysely";
 import {
   NewCampaignSchema,
   convertToCampaignAndValidate,
-} from "@/lib/schema/campaigns";
+} from "@/app/lib/schema/campaigns";
 import { z } from "zod";
 import { NextApiRequest, NextApiResponse } from "next";
 import { NextRequest, NextResponse } from "next/server";

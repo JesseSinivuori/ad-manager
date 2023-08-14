@@ -1,20 +1,21 @@
-import { db } from "@/lib/kysely";
+import { db } from "@/app/lib/kysely";
 import { z } from "zod";
-import { CampaignMetricsSchema } from "@/lib/schema/campaignMetrics";
+import { CampaignMetricsSchema } from "@/app/lib/schema/campaignMetrics";
 import {
   CampaignTable,
   NewCampaignSchema,
   convertToCampaignAndValidate,
-} from "@/lib/schema/campaigns";
+} from "@/app/lib/schema/campaigns";
 import { NextRequest, NextResponse } from "next/server";
-import { seed } from "@/lib/seed";
 
 export async function GET(req: NextRequest, res: NextResponse) {
   try {
     const { searchParams } = new URL(req.url);
-    const page = Number(searchParams.get("page")) + 1;
+    console.log("🚀 ~ file: route.ts:14 ~ GET ~ searchParams:", searchParams);
+
+    const page = Number(searchParams.get("page"));
     const limit = Number(searchParams.get("limit"));
-    const offset = (page - 1) * limit;
+    const offset = page * limit;
     const { countAll } = db.fn;
 
     const campaigns = await db
@@ -46,7 +47,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
 
     return NextResponse.json(
       {
-        totalPages: Number(campaignsCount.campaignsCount) / limit,
+        totalPages: Math.ceil(Number(campaignsCount.campaignsCount) / limit),
         currentPage: page,
         campaigns: parsedCampaigns,
       },

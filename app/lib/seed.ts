@@ -1,4 +1,4 @@
-import { db, sql } from "@/lib/kysely";
+import { db, sql } from "@/app/lib/kysely";
 import dayjs from "dayjs";
 import { CampaignMetricsSchema } from "./schema/campaignMetrics";
 import { NewCampaignSchema } from "./schema/campaigns";

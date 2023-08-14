@@ -1,21 +1,21 @@
 "use client";
 import { button } from "@/app/style";
 import { Button } from "./UI/Button";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import CampaignDialog from "./CampaignDialog";
-import { updateCampaignById } from "@/lib/campaigns";
-import { useCampaignsContext } from "@/providers/CampaignsProvider";
+import { updateCampaignById } from "@/app/lib/fetch/campaigns";
+import { useCampaignsContext } from "@/app/providers/CampaignsProvider";
 import {
-  Campaign,
   NewCampaign,
+  Campaign,
   NewCampaignSchema,
-} from "@/lib/schema/campaigns";
+} from "@/app/lib/schema/campaigns";
 import toast from "react-hot-toast";
 
 export default function EditCampaignButton({ id }: { id: string }) {
   const { campaigns, setCampaigns } = useCampaignsContext();
   const [showUpdateCampaign, setShowUpdateCampaign] = useState(false);
-  const selectedCampaign = campaigns.find(
+  const selectedCampaign: Campaign | undefined = campaigns.find(
     (campaign) => campaign.id.toString() === id
   );
   if (!selectedCampaign) return;

@@ -1,5 +1,5 @@
-import CampaignsGrid from "@/components/CampaignsGrid";
-import NewCampaignButton from "@/components/NewCampaignButton";
+import CampaignsGrid from "@/app/components/CampaignsGrid";
+import NewCampaignButton from "@/app/components/NewCampaignButton";
 
 export default function CampaignsPage() {
   return (

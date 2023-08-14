@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Campaign, NewCampaign } from "./schema/campaigns";
+import { Campaign, NewCampaign } from "../schema/campaigns";
 
 const baseUrl = "/api/campaigns";
 
