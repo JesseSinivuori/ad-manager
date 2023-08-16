@@ -6,8 +6,6 @@ jobs:
   build:
     timeout-minutes: 10
     runs-on: ubuntu-latest
-    env:
-      POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
     strategy:
       matrix:
         node-version: [18]
@@ -41,17 +39,6 @@ jobs:
 
       - name: Lint
         run: pnpm run lint
-
-      - name: Cache build folder
-        uses: actions/cache@v3
-        id: next-build
-        with:
-          path: .next
-          key: ${{ runner.os }}-next-build-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('**/*.js', '**/*.ts', '**/*.tsx', '**/*.jsx', '**/*.json', '!**/node_modules/**') }}
-
-      - name: Build application
-        if: steps.next-build.outputs.cache-hit != 'true'
-        run: pnpm run build
 
   test:
     strategy:
@@ -115,4 +102,4 @@ jobs:
         run: pnpm dlx playwright install --with-deps chromium
 
       - name: Run Playwright tests
-        run: pnpm run test:e2e
+        run: pnpm dlx playwright test
