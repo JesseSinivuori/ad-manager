@@ -5,6 +5,8 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
 
     steps:
       - name: Checkout
@@ -26,8 +28,6 @@ jobs:
         run: npm run lint
 
       - name: Jest
-        env:
-          POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
         run: npm run jest
 
       - name: Build
