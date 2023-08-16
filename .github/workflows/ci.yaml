@@ -4,37 +4,111 @@ on: [push, pull_request]
 
 jobs:
   build:
+    timeout-minutes: 10
     runs-on: ubuntu-latest
-    env:
-      POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
-
+    strategy:
+      matrix:
+        node-version: [18]
+        pnpm-version: [8]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
+      - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
-          node-version: 18
-          cache: "npm"
+          node-version: ${{ matrix.node-version }}
+
+      - name: Setup PNPM ${{ matrix.pnpm-version }}
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ matrix.pnpm-version }}
+
+      - name: Cache PNPM dependencies # (2)
+        uses: actions/cache@v3
+        id: pnpm
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Install Dependencies
-        run: npm install
+        run: pnpm install
 
       - name: Typecheck
-        run: npm run typecheck
+        run: pnpm run typecheck
 
       - name: Lint
-        run: npm run lint
+        run: pnpm run lint
+
+      - name: Cache build folder
+        uses: actions/cache@v3
+        id: next-build
+        with:
+          path: .next
+          key: ${{ runner.os }}-next-build-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('**/*.js', '**/*.ts', '**/*.tsx', '**/*.jsx', '**/*.json', '!**/node_modules/**') }}
+
+      - name: Build application
+        if: steps.next-build.outputs.cache-hit != 'true'
+        run: pnpm run build
+
+  test:
+    strategy:
+      matrix:
+        node-version: [18]
+        pnpm-version: [8]
+    needs: build
+    name: Playwright Tests
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Setup PNPM ${{ matrix.pnpm-version }}
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ matrix.pnpm-version }}
+
+      - name: Cache PNPM dependencies # (2)
+        uses: actions/cache@v3
+        id: pnpm
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Install Dependencies
+        run: pnpm install
+
+      - name: Cache build folder
+        uses: actions/cache@v3
+        id: next-build
+        with:
+          path: .next
+          key: ${{ runner.os }}-next-build-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('**/*.js', '**/*.ts', '**/*.tsx', '**/*.jsx', '**/*.json', '!**/node_modules/**') }}
+
+      - name: Build application
+        if: steps.next-build.outputs.cache-hit != 'true'
+        run: pnpm run build
 
       - name: Jest
-        run: npm run jest
+        run: pnpm run jest
 
-      - name: Build
-        run: npm run build
+      - name: Cache Playwright browsers
+        uses: actions/cache@v3
+        id: playwright-browsers
+        with:
+          path: ~/.cache/ms-playwright/
+          key: ${{ runner.os }}-playwright-browsers-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-browsers-
 
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps chromium
+        run: pnpm playwright install --with-deps chromium
 
       - name: Run Playwright tests
-        run: npx playwright test
+        run: pnpm run test:e2e

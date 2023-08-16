@@ -1,4 +1,3 @@
-/** @type {import('next').NextConfig} */
 const ContentSecurityPolicy = `
   default-src 'self';
   script-src 'self' ${
@@ -25,11 +24,14 @@ const securityHeaders = [
     value: ContentSecurityPolicy.replace(/\s{2,}/g, " ").trim(),
   },
 ];
+
+/** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   images: {
     formats: ["image/avif", "image/webp"],
   },
+  staticPageGenerationTimeout: 120,
   async headers() {
     return [
       {
