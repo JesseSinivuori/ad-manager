@@ -40,7 +40,7 @@ type CampaignDialogProps = {
   showDialog: boolean;
   setShowDialog: React.Dispatch<SetStateAction<boolean>>;
   currentCampaign?: Campaign;
-  action: (campaignToUpdate: any) => Promise<void>;
+  action: (_campaignToUpdate: any) => Promise<void>;
   buttonText: string;
 };
 

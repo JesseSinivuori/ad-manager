@@ -1,6 +1,5 @@
 import { db, sql } from "@/app/lib/kysely";
 import dayjs from "dayjs";
-import { CampaignMetricsSchema } from "./schema/campaignMetrics";
 import { NewCampaignSchema } from "./schema/campaigns";
 
 export const createCampaignsTable = async () =>
@@ -82,31 +81,9 @@ export async function seed() {
     .returning("id")
     .execute();
 
-  const campaignMetrics = Array(30)
-    .fill({})
-    .map((_m, i) => {
-      console.log(addCampaigns);
-      return CampaignMetricsSchema.parse({
-        campaignId: addCampaigns[i].id,
-        impressions: 10000 * i,
-        clicks: 1000 * i,
-        ctr: 0.1 * i,
-        averageCpc: 2.0 * i,
-        conversions: 8000 * i,
-        costPerConversion: 2.5 * i,
-        conversionRate: 0.8 * i,
-      });
-    });
-
-  const addCampaignMetrics = await db
-    .insertInto("campaignMetrics")
-    .values(campaignMetrics)
-    .execute();
-
   return {
     createCampaignsTable,
     addCampaigns,
     createCampaignMetricsTable,
-    //addCampaignMetrics,
   };
 }

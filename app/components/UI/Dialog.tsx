@@ -71,8 +71,7 @@ export default function DialogComponent<T extends Record<string, Field>>(
 
   const handleNumberChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    key: string,
-    value: Field
+    key: string
   ) => {
     const regex = /^[0-9\b]+$/;
     if (e.target.value === "" || regex.test(e.target.value)) {
@@ -139,7 +138,7 @@ export default function DialogComponent<T extends Record<string, Field>>(
                         value={value.value}
                         inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
                         type="text"
-                        onChange={(e) => handleNumberChange(e, key, value)}
+                        onChange={(e) => handleNumberChange(e, key)}
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
                             handleButtonClick();

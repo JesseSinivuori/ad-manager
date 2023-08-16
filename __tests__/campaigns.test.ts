@@ -95,7 +95,7 @@ describe("mockCampaign API Fetch Functions", () => {
   });
 });
 
-describe.only("convertToCampaignAndValidate", () => {
+describe("convertToCampaignAndValidate", () => {
   it("returns correct data", async () => {
     const newCampaign = {
       ...mockNewCampaign,
