@@ -1,4 +1,3 @@
-"use client";
 import CampaignsGrid from "@/app/components/CampaignsGrid";
 import NewCampaignButton from "@/app/components/NewCampaignButton";
 
