@@ -10,7 +10,6 @@ export async function GET() {
 
     return NextResponse.json(campaignMetrics);
   } catch (error) {
-    console.error(error);
     return NextResponse.json(
       { error: "Failed to get campaign metrics" },
       { status: 500 }

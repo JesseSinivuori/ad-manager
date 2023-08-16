@@ -31,6 +31,7 @@ export async function updateCampaignById(
     const res = await axios.put(`${baseUrl}/${id}`, updatedCampaign);
     return res.data;
   } catch (error) {
+    console.error(error);
     throw new Error(`Failed to update campaign with id ${id}`);
   }
 }

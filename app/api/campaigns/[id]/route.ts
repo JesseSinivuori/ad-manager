@@ -8,17 +8,27 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
-  req: NextApiRequest,
+  _req: NextApiRequest,
   { params: { id } }: { params: { id: string } },
-  res: NextApiResponse
+  _res: NextApiResponse
 ) {
   try {
     const campaign = await db
       .selectFrom("campaigns")
-      .leftJoin("campaignMetrics", "campaignMetrics.campaignId", "campaigns.id")
+      .innerJoin(
+        "campaignMetrics",
+        "campaignMetrics.campaignId",
+        "campaigns.id"
+      )
+      .where("campaignId", "=", Number(id))
       .selectAll()
-      .where("id", "=", Number(id))
       .executeTakeFirstOrThrow();
+    if (!campaign) {
+      return NextResponse.json(
+        { error: "Failed to get campaign." },
+        { status: 400 }
+      );
+    }
 
     const convertedCampaign = convertToCampaignAndValidate(campaign);
     return NextResponse.json(convertedCampaign);
@@ -30,7 +40,7 @@ export async function GET(
       );
     }
     return NextResponse.json(
-      { error: "Failed to get campaign." },
+      { error: "Internal server error." },
       { status: 500 }
     );
   }
@@ -39,7 +49,7 @@ export async function GET(
 export async function PUT(
   req: NextRequest,
   { params: { id } }: { params: { id: string } },
-  res: NextResponse
+  _res: NextResponse
 ) {
   try {
     const newCampaign = NewCampaignSchema.parse(await req.json());
@@ -51,9 +61,13 @@ export async function PUT(
       .returningAll()
       .executeTakeFirstOrThrow();
 
-    const convertedCampaign = convertToCampaignAndValidate(updatedCampaign);
+    const returnedCampaign = {
+      ...updatedCampaign,
+      adGroups: JSON.parse(updatedCampaign.adGroups),
+      keywords: JSON.parse(updatedCampaign.keywords),
+    };
 
-    return NextResponse.json(convertedCampaign);
+    return NextResponse.json(returnedCampaign, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -70,9 +84,9 @@ export async function PUT(
 }
 
 export async function DELETE(
-  req: NextApiRequest,
+  _req: NextApiRequest,
   { params: { id } }: { params: { id: string } },
-  res: NextApiResponse
+  _res: NextApiResponse
 ) {
   try {
     await db

@@ -7,7 +7,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 type DatePickerProps = {
   label: string;
-  onChange: (newValue: Dayjs | null) => void;
+  onChange: (_newValue: Dayjs | null) => void;
   initialValue: Dayjs | null;
 };
 

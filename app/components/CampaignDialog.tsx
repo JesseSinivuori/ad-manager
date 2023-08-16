@@ -2,7 +2,11 @@
 import { SetStateAction, useEffect, useMemo, useState } from "react";
 import Dialog from "./UI/Dialog";
 import dayjs from "dayjs";
-import { NewCampaign, NewCampaignSchema } from "@/app/lib/schema/campaigns";
+import {
+  Campaign,
+  NewCampaign,
+  NewCampaignSchema,
+} from "@/app/lib/schema/campaigns";
 
 type CampaignDialogProps = {
   name?: {
@@ -35,7 +39,8 @@ type CampaignDialogProps = {
   };
   showDialog: boolean;
   setShowDialog: React.Dispatch<SetStateAction<boolean>>;
-  action: (campaignToCreate: NewCampaign) => Promise<void>;
+  currentCampaign?: Campaign;
+  action: (campaignToUpdate: any) => Promise<void>;
   buttonText: string;
 };
 
@@ -119,7 +124,7 @@ export default function CampaignDialog(props: CampaignDialogProps) {
     initialNewCampaign,
   ]);
 
-  const handleCreateCampaign = async () => {
+  const handleAction = async () => {
     try {
       const campaignToCreate: NewCampaign = NewCampaignSchema.parse({
         name: newCampaign.name.value,
@@ -135,10 +140,8 @@ export default function CampaignDialog(props: CampaignDialogProps) {
             : "paused",
       });
 
-      if (campaignToCreate) {
-        await action(campaignToCreate);
-        setNewCampaign(initialNewCampaign);
-      }
+      await action(campaignToCreate);
+      setNewCampaign(initialNewCampaign);
     } catch (error) {
       console.error(error);
       throw new Error("Failed to create campaign.");
@@ -152,7 +155,7 @@ export default function CampaignDialog(props: CampaignDialogProps) {
       buttonText={buttonText}
       show={showDialog}
       setShow={setShowDialog}
-      handleClick={handleCreateCampaign}
+      handleClick={handleAction}
     />
   );
 }

@@ -8,37 +8,44 @@ import { useCampaignsContext } from "@/app/providers/CampaignsProvider";
 import {
   NewCampaign,
   Campaign,
-  NewCampaignSchema,
+  CampaignSchema,
 } from "@/app/lib/schema/campaigns";
 import toast from "react-hot-toast";
 
 export default function EditCampaignButton({ id }: { id: string }) {
   const { campaigns, setCampaigns } = useCampaignsContext();
-  const [showUpdateCampaign, setShowUpdateCampaign] = useState(false);
+  const [showUpdateCampaignDialog, setShowUpdateCampaignDialog] =
+    useState(false);
   const selectedCampaign: Campaign | undefined = campaigns.find(
     (campaign) => campaign.id.toString() === id
   );
   if (!selectedCampaign) return;
 
   const handleUpdateCampaign = async (campaignToUpdate: NewCampaign) => {
-    const campaignWithCurrentStatus = {
-      ...campaignToUpdate,
-      status: selectedCampaign.status,
-    };
-    const validatedCampaignToUpdate = NewCampaignSchema.parse(
-      campaignWithCurrentStatus
-    );
-
-    const update = updateCampaignById(id, validatedCampaignToUpdate)
+    const update = updateCampaignById(id, campaignToUpdate)
       .then((updatedCampaign) => {
+        const updatedCampaignWithMetrics = CampaignSchema.parse({
+          ...selectedCampaign,
+          name: updatedCampaign.name,
+          startDate: updatedCampaign.startDate,
+          endDate: updatedCampaign.endDate,
+          targetAudience: updatedCampaign.targetAudience,
+          budget: updatedCampaign.budget,
+          status: updatedCampaign.status,
+          adGroups: updatedCampaign.adGroups,
+          keywords: updatedCampaign.keywords,
+        });
         setCampaigns((prevCampaigns) =>
           prevCampaigns.map((campaign) =>
-            campaign.id.toString() !== id ? campaign : updatedCampaign
+            campaign.id.toString() !== id
+              ? campaign
+              : updatedCampaignWithMetrics
           )
         );
       })
       .catch((error) => {
         console.error(error);
+        throw new Error(error);
       });
 
     toast.promise(update, {
@@ -55,8 +62,8 @@ export default function EditCampaignButton({ id }: { id: string }) {
           key={selectedCampaign.id}
           buttonText={"Update"}
           action={handleUpdateCampaign}
-          showDialog={showUpdateCampaign}
-          setShowDialog={setShowUpdateCampaign}
+          showDialog={showUpdateCampaignDialog}
+          setShowDialog={setShowUpdateCampaignDialog}
           name={{ value: selectedCampaign.name ?? "", title: "Name" }}
           startDate={{
             value: selectedCampaign.startDate ?? "",
@@ -76,14 +83,14 @@ export default function EditCampaignButton({ id }: { id: string }) {
           }}
           adGroups={{
             value:
-              selectedCampaign.adGroups
+              [...selectedCampaign.adGroups]
                 .map((adGroup) => adGroup.trim())
                 .join(", ") ?? "",
             title: "Ad Groups",
           }}
           keywords={{
             value:
-              selectedCampaign.keywords
+              [...selectedCampaign.keywords]
                 .map((keyword) => keyword.trim())
                 .join(", ") ?? "",
             title: "Keywords",
@@ -92,7 +99,7 @@ export default function EditCampaignButton({ id }: { id: string }) {
       )}
       <Button
         className={`${button.transparent}`}
-        onClick={() => setShowUpdateCampaign(true)}
+        onClick={() => setShowUpdateCampaignDialog(true)}
       >
         Edit
       </Button>

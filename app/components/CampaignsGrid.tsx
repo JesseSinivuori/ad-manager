@@ -10,12 +10,11 @@ import {
   updateCampaignById,
 } from "@/app/lib/fetch/campaigns";
 import EditCampaignButton from "./EditCampaignButton";
-import { NewCampaign, NewCampaignSchema } from "@/app/lib/schema/campaigns";
+import { NewCampaign } from "@/app/lib/schema/campaigns";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useSWR from "swr";
 import { useCampaignsContext } from "@/app/providers/CampaignsProvider";
-import Loading from "@/app/loading";
 import Error from "@/app/error";
 
 export default function CampaignsGrid() {
@@ -25,7 +24,7 @@ export default function CampaignsGrid() {
   });
   const { page, pageSize } = paginationModel;
 
-  const { data, error } = useSWR(
+  const { data, error, isLoading } = useSWR(
     `/api/campaigns?page=${page}&limit=${pageSize}`,
     fetcher
   );
@@ -54,7 +53,6 @@ export default function CampaignsGrid() {
     }
   }, [data, campaigns]);
 
-  if (!data && campaigns.length === 0) return <Loading />;
   if (error) return <Error />;
 
   const columns: GridColDef[] = [
@@ -114,6 +112,7 @@ export default function CampaignsGrid() {
       disableColumnMenu: true,
       renderCell: ({ value }) => (
         <div
+          data-testid="status"
           className={`
           ${value === "active" && "text-emerald-500"}
           ${value === "paused" && "text-yellow-500"}
@@ -131,7 +130,7 @@ export default function CampaignsGrid() {
       disableColumnMenu: true,
       renderCell: ({ value }) => (
         <div className="hover:h-full hover:w-full whitespace-normal break-words z-[10] overscroll-none hover:overflow-y-scroll">
-          {value}
+          {value.join(", ")}
         </div>
       ),
     },
@@ -143,7 +142,7 @@ export default function CampaignsGrid() {
       disableColumnMenu: true,
       renderCell: ({ value }) => (
         <div className="hover:h-full hover:w-full whitespace-normal break-words z-[10] overscroll-none hover:overflow-y-scroll">
-          {value}
+          {value.join(", ")}
         </div>
       ),
     },
@@ -248,7 +247,7 @@ export default function CampaignsGrid() {
         const id = params.row.id.toString();
 
         return (
-          <div>
+          <div data-testid="activate/pause-button">
             <Button
               onClick={() => handleToggleCampaignStatus(id)}
               className={`p-2 w-[70px]
@@ -288,26 +287,40 @@ export default function CampaignsGrid() {
     );
 
     if (!selectedCampaign) return;
-
-    const { campaignMetrics, ...restOfCampaign } = selectedCampaign;
-
-    const campaignToUpdate: NewCampaign = NewCampaignSchema.parse({
-      ...restOfCampaign,
+    const campaignToUpdate: NewCampaign = {
       status: selectedCampaign.status === "active" ? "paused" : "active",
       adGroups: JSON.stringify(selectedCampaign.adGroups),
       keywords: JSON.stringify(selectedCampaign.keywords),
-    });
+      name: selectedCampaign.name,
+      startDate: selectedCampaign.startDate,
+      endDate: selectedCampaign.endDate,
+      targetAudience: selectedCampaign.targetAudience,
+      budget: selectedCampaign.budget,
+    };
 
     const update = updateCampaignById(id, campaignToUpdate)
       .then((updatedCampaign) => {
+        const updatedCampaignWithMetrics = {
+          ...selectedCampaign,
+          name: updatedCampaign.name,
+          startDate: updatedCampaign.startDate,
+          endDate: updatedCampaign.endDate,
+          targetAudience: updatedCampaign.targetAudience,
+          budget: updatedCampaign.budget,
+          status: updatedCampaign.status,
+          adGroups: updatedCampaign.adGroups,
+          keywords: updatedCampaign.keywords,
+        };
+
         setCampaigns((prevCampaigns) =>
           prevCampaigns.map((campaign) =>
-            campaign.id.toString() === updatedCampaign.id.toString()
-              ? updatedCampaign
-              : campaign
+            campaign.id.toString() !== updatedCampaign.id.toString()
+              ? campaign
+              : updatedCampaignWithMetrics
           )
         );
       })
+
       .catch((error) => {
         console.error(error);
       });
@@ -343,7 +356,9 @@ export default function CampaignsGrid() {
           );
         }
       })
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        console.error(error);
+      });
 
     toast.promise(deleteCampaign, {
       loading: "Deleting campaign...",
@@ -352,22 +367,7 @@ export default function CampaignsGrid() {
     });
   };
 
-  const rows = campaigns.map((campaign) => {
-    return {
-      ...campaign,
-      campaignId: campaign.campaignMetrics!.campaignId,
-      impressions: campaign.campaignMetrics!.impressions,
-      clicks: campaign.campaignMetrics!.clicks,
-      ctr: campaign.campaignMetrics!.ctr,
-      averageCpc: campaign.campaignMetrics!.averageCpc,
-      conversions: campaign.campaignMetrics!.conversions,
-      costPerConversion: campaign.campaignMetrics!.costPerConversion,
-      conversionRate: campaign.campaignMetrics!.conversionRate,
-      adGroups: campaign.adGroups.join(", "),
-      keywords: campaign.keywords.join(", "),
-      id: campaign.id,
-    };
-  });
+  const rows = campaigns;
 
   return (
     <div className="overscroll-none flex justify-center w-full p-4 max-w-[1400px]">
@@ -378,6 +378,7 @@ export default function CampaignsGrid() {
               autoHeight
               rows={rows ?? []}
               rowCount={data ? data.totalPages * pageSize : 0}
+              loading={isLoading}
               columns={columns ?? []}
               initialState={{
                 pagination: {

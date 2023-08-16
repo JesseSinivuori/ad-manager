@@ -5,7 +5,7 @@ import { useState } from "react";
 import CampaignDialog from "./CampaignDialog";
 import { createCampaign } from "@/app/lib/fetch/campaigns";
 import { useCampaignsContext } from "@/app/providers/CampaignsProvider";
-import { NewCampaign, NewCampaignSchema } from "@/app/lib/schema/campaigns";
+import { NewCampaign } from "@/app/lib/schema/campaigns";
 import toast from "react-hot-toast";
 
 export default function NewCampaignButton() {
@@ -13,8 +13,7 @@ export default function NewCampaignButton() {
   const [showCreateCampaign, setShowCreateCampaign] = useState(false);
 
   const handleCreateCampaign = async (campaignToCreate: NewCampaign) => {
-    const validatedCampaignToCreate = NewCampaignSchema.parse(campaignToCreate);
-    const create = createCampaign(validatedCampaignToCreate)
+    const create = createCampaign(campaignToCreate)
       .then((createdCampaign) => {
         setCampaigns((prevCampaigns) => [createdCampaign, ...prevCampaigns]);
       })

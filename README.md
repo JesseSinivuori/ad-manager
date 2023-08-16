@@ -1,34 +1,205 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Ad Manager
+https://ad-manager-beta.vercel.app/
+## Tech Stack:
+- [React](https://react.dev/) - The JavaScript Library
+- [Next.js](https://nextjs.org/) - A Full Stack React Framework
+- [TypeScript](https://www.typescriptlang.org/) - The Programming Language
+- [Zod](https://zod.dev/) - Schema Validation / E2E Type Safety
+- [Kysely](https://kysely.dev/) - Type-Safe SQL Query Builder
+- [Vercel Postgres](https://vercel.com/docs/storage/vercel-postgres) - Serverless SQL Database
+- [TailwindCSS](https://tailwindcss.com/) - Styling
+- [HeadlessUI](https://headlessui.com/) - UI Components
+- [MaterialUI](https://mui.com/) - UI Components
+- [Jest](https://jestjs.io/) - Unit Tests
+- [GitHub Actions](https://github.com/features/actions) - CI/CD
+- [Vercel](https://vercel.com/) - The Host
 
-## Getting Started
 
-First, run the development server:
+## Installation
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/JesseSinivuori/ad-manager.git
+```
+
+### 2. Navigate to the project folder
+```bash
+cd ./ad-manager
+```
+
+### 3. Install
+
+```bash
+npm run install
+```
+
+### 4.
+### Run development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+```
+#### or
+### Build and run the production build
+```bash
+npm run build
+npm run start
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Running Unit tests
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### 1. Run Jest
+```bash
+npm run jest
+```
 
-## Learn More
+## Running E2E tests
 
-To learn more about Next.js, take a look at the following resources:
+### 1. Install playwright browsers
+```bash
+npx playwright install
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 2. Run the dev or production build
+```bash
+npm run dev
+```
+#### or
+```bash
+npm run start
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+### 3. Run playwright tests
+```bash
+npm run test:e2e
+```
 
-## Deploy on Vercel
+## API
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### `GET /api/campaigns/`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+This endpoint gets a paginated list of campaigns, along with their associated metrics.
+
+#### Parameters
+- `page`: The page number you want to get. Starts from 0.
+- `limit`: The number of campaigns you want to get per page.
+- `id`: For getting a single campaign by id.
+
+#### Example Requests
+
+Get multiple campaigns: `/api/campaigns?page=0&limit=10`\
+Get a single campaign: `/api/campaigns/id`
+
+#### Returns a JSON object containing:
+
+`totalPages`: The total number of pages available.\
+`currentPage`: The current page number.\
+`campaigns`: An array of campaign objects, with their associated metrics.
+
+#### Example Response
+```js
+{
+  "totalPages": 360,
+  "currentPage": 0,
+  "campaigns": [
+    {
+      "name": "Campaign 0",
+      "startDate": "2023-08-15T20:54:13.232Z",
+      "endDate": "2023-08-15T20:54:13.240Z",
+      "targetAudience": "Audience 0",
+      "budget": 0,
+      "status": "active",
+      "updatedAt": "2023-08-15T20:54:13.480Z",
+      "campaignId": 432,
+      "impressions": 0,
+      "clicks": 0,
+      "ctr": 0,
+      "averageCpc": 0,
+      "conversions": 0,
+      "costPerConversion": 0,
+      "conversionRate": 0,
+      "adGroups": [
+        "Group 1",
+        "Group 2",
+        "Group 3"
+      ],
+      "keywords": [
+        "Keyword 1",
+        "Keyword 2",
+        "Keyword 3"
+      ],
+      "createdAt": "2023-08-15T20:54:13.480Z",
+      "id": 432
+    }
+  ]
+}
+```
+
+### `POST` `/api/campaigns/`
+This endpoint allows you to create a new advertising campaign.
+
+#### Request Body
+
+Expects a JSON object containing the details of the new campaign in the shape of `NewCampaignSchema`.
+
+#### Response
+Returns a JSON object of the newly created campaign, combined with its initial metrics.
+
+### `PUT` `/api/campaigns/id`
+This endpoint allows you to edit a campaign.
+
+#### Request Body
+
+Expects a JSON object containing the details of the new campaign in the shape of `NewCampaignSchema`.
+
+#### Response
+Returns a JSON object of the edited campaign. Does NOT return metrics. Metrics are not editable.
+
+### `DELETE` `/api/campaigns/id`
+This endpoint allows you to delete a campaign.
+
+#### Response
+Returns a status code 204 for successful deletion.
+
+
+## Database Schemas
+This application uses two primary tables: `CampaignTable` and `CampaignMetricsTable`. These tables are joined together in the `GET` endpoint.
+
+### `CampaignTable`
+This table stores information about various advertising campaigns.
+
+#### Fields:
+`id`: (Optional, generated by database) Unique identifier for each campaign.\
+`name`: The name of the campaign.\
+`startDate`: The start date of the campaign.\
+`endDate`: The end date of the campaign.\
+`targetAudience`: The target audience for the campaign.\
+`budget`: The budget for the campaign.\
+`status`: The status of the campaign. Can be active or paused.\
+`adGroups`: JSON parsable string that converts to a string array representing ad groups in the campaign.\
+`keywords`: JSON parsable string that converts to a string array representing keywords related to the campaign.\
+`createdAt`: (Optional, generated by database) The date when the campaign was created.\
+`updatedAt`: (Optional, generated by database) The date when the campaign was last updated.
+
+#### Relations:
+Each `Campaign` has a one-to-one relationship with `CampaignMetrics` through the `campaignId` field, which is  a foreign key reference to `CampaignMetrics`.
+
+### `CampaignMetricsTable`
+This table stores metrics related to the advertising campaigns. This is supposed to simulate a third party API.
+
+#### Fields:
+
+`campaignId`: Foreign key to the associated campaign in the CampaignTable.\
+`impressions`: The number of impressions.\
+`clicks`: The number of clicks.\
+`ctr`: The click-through rate.\
+`averageCpc`: The average cost per click.\
+`conversions`: The number of conversions.\
+`costPerConversion`: The cost per conversion.\
+`conversionRate`: The conversion rate.
+
+#### Relations:
+
+Each `CampaignMetrics` is associated with one `Campaign` through the `campaignId` field.

@@ -14,7 +14,7 @@ const config = {
   transform: {
     "^.+\\.ts?$": "ts-jest",
   },
-  testPathIgnorePatterns: ["/node_modules/", "/__tests__/utils/"],
+  testPathIgnorePatterns: ["/node_modules/", "/__tests__/helpers/", "/e2e/"],
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

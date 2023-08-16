@@ -1,4 +1,3 @@
-import { db } from "@/app/lib/kysely";
 import {
   getCampaigns,
   createCampaign,
@@ -6,7 +5,14 @@ import {
   deleteCampaignById,
 } from "@/app/lib/fetch/campaigns";
 import axios from "axios";
-import { initialCampaigns, newCampaign, campaign } from "./utils/testData";
+import {
+  mockInitialCampaigns,
+  mockNewCampaign,
+  mockCampaign,
+  mockCampaignMetrics,
+  mockDbAddedProps,
+} from "./helpers/testData";
+import { convertToCampaignAndValidate } from "@/app/lib/schema/campaigns";
 
 jest.mock("axios");
 
@@ -14,17 +20,17 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
-describe("Campaign API Fetch Functions", () => {
+describe("mockCampaign API Fetch Functions", () => {
   describe("getCampaigns", () => {
     it("successfully gets campaigns", async () => {
-      const res = { data: initialCampaigns, status: 200 };
+      const res = { data: mockInitialCampaigns, status: 200 };
 
       //@ts-expect-error
       axios.get.mockResolvedValueOnce(res);
 
       const campaigns = await getCampaigns();
 
-      expect(campaigns).toEqual(initialCampaigns);
+      expect(campaigns).toEqual(mockInitialCampaigns);
     });
     it("throws error when getting campaigns fails", async () => {
       try {
@@ -36,25 +42,25 @@ describe("Campaign API Fetch Functions", () => {
   });
 
   describe("createCampaign", () => {
-    it("successfully creates a campaign", async () => {
+    it("successfully creates a mockCampaign", async () => {
       //@ts-expect-error
-      axios.post.mockResolvedValueOnce({ data: { ...campaign } });
-      const result = await createCampaign(newCampaign);
-      expect(result).toEqual(campaign);
+      axios.post.mockResolvedValueOnce({ data: { ...mockCampaign } });
+      const result = await createCampaign(mockNewCampaign);
+      expect(result).toEqual(mockCampaign);
     });
 
     it("throws error when creation fails", async () => {
       //@ts-expect-error
       axios.post.mockRejectedValueOnce(new Error());
-      await expect(createCampaign(newCampaign)).rejects.toThrow(
-        "Failed to create campaign."
+      await expect(createCampaign(mockNewCampaign)).rejects.toThrow(
+        "Failed to create mockCampaign."
       );
     });
   });
 
   describe("updateCampaignById", () => {
-    it("successfully updates a campaign by id", async () => {
-      const updatedCampaign = { ...newCampaign };
+    it("successfully updates a mockCampaign by id", async () => {
+      const updatedCampaign = { ...mockNewCampaign };
       //@ts-expect-error
       axios.put.mockResolvedValueOnce({ data: updatedCampaign });
 
@@ -65,14 +71,14 @@ describe("Campaign API Fetch Functions", () => {
     it("throws error when update fails", async () => {
       //@ts-expect-error
       axios.put.mockRejectedValueOnce(new Error());
-      await expect(updateCampaignById("123", newCampaign)).rejects.toThrow(
-        "Failed to update campaign with id 123"
+      await expect(updateCampaignById("123", mockNewCampaign)).rejects.toThrow(
+        "Failed to update mockCampaign with id 123"
       );
     });
   });
 
   describe("deleteCampaignById", () => {
-    it("successfully deletes a campaign by id", async () => {
+    it("successfully deletes a mockCampaign by id", async () => {
       //@ts-expect-error
       axios.delete.mockResolvedValueOnce({ data: {} });
       const result = await deleteCampaignById("123");
@@ -83,12 +89,22 @@ describe("Campaign API Fetch Functions", () => {
       //@ts-expect-error
       axios.delete.mockRejectedValueOnce(new Error());
       await expect(deleteCampaignById("123")).rejects.toThrow(
-        "Failed to delete campaign with id 123"
+        "Failed to delete mockCampaign with id 123"
       );
     });
   });
 });
 
-afterAll(async () => {
-  await db.destroy();
+describe.only("convertToCampaignAndValidate", () => {
+  it("returns correct data", async () => {
+    const newCampaign = {
+      ...mockNewCampaign,
+      ...mockCampaignMetrics,
+      ...mockDbAddedProps,
+    };
+
+    const convertedCampaign = convertToCampaignAndValidate(newCampaign);
+
+    expect(convertedCampaign).toEqual(mockCampaign);
+  });
 });

@@ -28,7 +28,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "__tests__/utils/testClient.ts",
+    "__tests__/helpers/testClient.ts",
     "node_modules/@edge-runtime/jest-expect"
   ],
   "exclude": ["node_modules"]

@@ -1,6 +1,6 @@
 import { db } from "@/app/lib/kysely";
 import { z } from "zod";
-import { CampaignMetricsSchema } from "@/app/lib/schema/campaignMetrics";
+import { CampaignMetricsTable } from "@/app/lib/schema/campaignMetrics";
 import {
   CampaignTable,
   NewCampaignSchema,
@@ -8,11 +8,9 @@ import {
 } from "@/app/lib/schema/campaigns";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest, res: NextResponse) {
+export async function GET(req: NextRequest, _res: NextResponse) {
   try {
     const { searchParams } = new URL(req.url);
-    console.log("🚀 ~ file: route.ts:14 ~ GET ~ searchParams:", searchParams);
-
     const page = Number(searchParams.get("page"));
     const limit = Number(searchParams.get("limit"));
     const offset = page * limit;
@@ -26,22 +24,29 @@ export async function GET(req: NextRequest, res: NextResponse) {
         "campaigns.id"
       )
       .selectAll()
-      .select((qb) =>
-        qb
-          .selectFrom("campaigns")
-          .select("id")
-          .whereRef("campaignMetrics.campaignId", "=", "campaigns.id")
-          .as("id")
-      )
       .orderBy("campaigns.createdAt", "desc")
       .limit(limit)
       .offset(offset)
       .execute();
 
+    if (!campaigns) {
+      return NextResponse.json(
+        { error: "Failed to get campaigns" },
+        { status: 400 }
+      );
+    }
+
     const campaignsCount = await db
       .selectFrom("campaigns")
       .select(countAll().as("campaignsCount"))
       .executeTakeFirstOrThrow();
+
+    if (!campaignsCount) {
+      return NextResponse.json(
+        { error: "Failed to get campaignsCount" },
+        { status: 400 }
+      );
+    }
 
     const parsedCampaigns = campaigns.map(convertToCampaignAndValidate);
 
@@ -67,7 +72,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
   }
 }
 
-export async function POST(req: Request, res: Response) {
+export async function POST(req: Request, _res: Response) {
   try {
     const newCampaign = NewCampaignSchema.parse(await req.json());
 
@@ -77,8 +82,15 @@ export async function POST(req: Request, res: Response) {
       .returningAll()
       .executeTakeFirstOrThrow();
 
-    const initialCampaignMetrics = CampaignMetricsSchema.parse({
-      campaignId: insertedCampaign.id,
+    if (!insertedCampaign) {
+      return NextResponse.json(
+        { error: "Failed to insert campaign" },
+        { status: 400 }
+      );
+    }
+
+    const initialCampaignMetrics: CampaignMetricsTable = {
+      campaignId: insertedCampaign.id!,
       impressions: 0,
       clicks: 0,
       ctr: 0,
@@ -86,17 +98,30 @@ export async function POST(req: Request, res: Response) {
       conversions: 0,
       costPerConversion: 0,
       conversionRate: 0,
-    });
+    };
 
-    await db
+    const insertedCampaignMetrics = await db
       .insertInto("campaignMetrics")
       .values(initialCampaignMetrics)
       .returningAll()
       .executeTakeFirstOrThrow();
 
+    if (!insertedCampaignMetrics) {
+      if (insertedCampaign.id) {
+        await db
+          .deleteFrom("campaigns")
+          .where("id", "=", insertedCampaign.id)
+          .executeTakeFirstOrThrow();
+      }
+      return NextResponse.json(
+        { error: "Failed to insert campaignMetrics" },
+        { status: 400 }
+      );
+    }
+
     const campaignWithMetrics: CampaignTable = {
       ...insertedCampaign,
-      campaignMetrics: initialCampaignMetrics,
+      ...insertedCampaignMetrics,
     };
 
     const convertedCampaign = convertToCampaignAndValidate(campaignWithMetrics);

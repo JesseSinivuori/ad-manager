@@ -29,3 +29,12 @@ jobs:
         env:
           POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
         run: npm run jest
+
+      - name: Build
+        run: npm run build
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright tests
+        run: npx playwright test

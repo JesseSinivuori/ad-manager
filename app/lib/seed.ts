@@ -3,9 +3,8 @@ import dayjs from "dayjs";
 import { CampaignMetricsSchema } from "./schema/campaignMetrics";
 import { NewCampaignSchema } from "./schema/campaigns";
 
-export async function seed() {
-  console.log(`Starting to create "campaigns" table...`);
-  const createCampaignsTable = await db.schema
+export const createCampaignsTable = async () =>
+  await db.schema
     .createTable("campaigns")
     .ifNotExists()
     .addColumn("id", "serial", (cb) => cb.primaryKey())
@@ -24,9 +23,9 @@ export async function seed() {
       cb.defaultTo(sql`current_timestamp`)
     )
     .execute();
-  console.log(`Created "campaigns" table`);
 
-  const createCampaignMetricsTable = await db.schema
+export const createCampaignMetricsTable = async () =>
+  await db.schema
     .createTable("campaignMetrics")
     .ifNotExists()
     .addColumn("id", "serial", (cb) => cb.primaryKey())
@@ -52,6 +51,12 @@ export async function seed() {
     )
     .execute();
 
+export async function seed() {
+  console.log(`Starting to create "campaigns" table...`);
+  await createCampaignsTable();
+  console.log(`Created "campaigns" table`);
+
+  await createCampaignMetricsTable();
   console.log(`Created "campaignMetrics" table`);
 
   const campaigns = Array(30)
