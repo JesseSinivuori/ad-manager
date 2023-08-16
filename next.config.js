@@ -31,7 +31,6 @@ const nextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
   },
-  staticPageGenerationTimeout: 120,
   async headers() {
     return [
       {
