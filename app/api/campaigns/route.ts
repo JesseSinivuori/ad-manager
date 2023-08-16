@@ -66,7 +66,7 @@ export async function GET(req: NextRequest, _res: NextResponse) {
       );
     }
     return NextResponse.json(
-      { error: "Failed to get campaigns." },
+      { error: "Internal server error." },
       { status: 500 }
     );
   }
@@ -135,7 +135,7 @@ export async function POST(req: Request, _res: Response) {
       );
     }
     return NextResponse.json(
-      { error: "Failed to create campaign." },
+      { error: "Internal server error." },
       { status: 500 }
     );
   }

@@ -143,8 +143,7 @@ export default function CampaignDialog(props: CampaignDialogProps) {
       await action(campaignToCreate);
       setNewCampaign(initialNewCampaign);
     } catch (error) {
-      console.error(error);
-      throw new Error("Failed to create campaign.");
+      throw new Error("CampaignDialog action failed.");
     }
   };
 

@@ -298,8 +298,8 @@ export default function CampaignsGrid() {
       budget: selectedCampaign.budget,
     };
 
-    const update = updateCampaignById(id, campaignToUpdate)
-      .then((updatedCampaign) => {
+    const update = updateCampaignById(id, campaignToUpdate).then(
+      (updatedCampaign) => {
         const updatedCampaignWithMetrics = {
           ...selectedCampaign,
           name: updatedCampaign.name,
@@ -319,11 +319,8 @@ export default function CampaignsGrid() {
               : updatedCampaignWithMetrics
           )
         );
-      })
-
-      .catch((error) => {
-        console.error(error);
-      });
+      }
+    );
 
     const loadingText =
       campaignToUpdate.status !== "active"
@@ -346,19 +343,15 @@ export default function CampaignsGrid() {
   };
 
   const handleDelete = async (id: string) => {
-    const deleteCampaign = deleteCampaignById(id)
-      .then((res) => {
-        if (res.status === 204) {
-          setCampaigns((prevCampaigns) =>
-            prevCampaigns.filter(
-              (campaign) => campaign.id.toString() !== id.toString()
-            )
-          );
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    const deleteCampaign = deleteCampaignById(id).then((res) => {
+      if (res.status === 204) {
+        setCampaigns((prevCampaigns) =>
+          prevCampaigns.filter(
+            (campaign) => campaign.id.toString() !== id.toString()
+          )
+        );
+      }
+    });
 
     toast.promise(deleteCampaign, {
       loading: "Deleting campaign...",

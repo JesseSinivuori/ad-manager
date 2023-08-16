@@ -22,8 +22,8 @@ export default function EditCampaignButton({ id }: { id: string }) {
   if (!selectedCampaign) return;
 
   const handleUpdateCampaign = async (campaignToUpdate: NewCampaign) => {
-    const update = updateCampaignById(id, campaignToUpdate)
-      .then((updatedCampaign) => {
+    const update = updateCampaignById(id, campaignToUpdate).then(
+      (updatedCampaign) => {
         const updatedCampaignWithMetrics = CampaignSchema.parse({
           ...selectedCampaign,
           name: updatedCampaign.name,
@@ -42,11 +42,8 @@ export default function EditCampaignButton({ id }: { id: string }) {
               : updatedCampaignWithMetrics
           )
         );
-      })
-      .catch((error) => {
-        console.error(error);
-        throw new Error(error);
-      });
+      }
+    );
 
     toast.promise(update, {
       loading: "Updating campaign...",

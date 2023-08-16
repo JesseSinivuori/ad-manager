@@ -76,7 +76,7 @@ export async function PUT(
       );
     } else {
       return NextResponse.json(
-        { error: "Failed to update campaign." },
+        { error: "Internal server error." },
         { status: 500 }
       );
     }
