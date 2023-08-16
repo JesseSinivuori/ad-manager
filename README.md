@@ -155,7 +155,7 @@ This endpoint allows you to edit a campaign.
 Expects a JSON object containing the details of the new campaign in the shape of `NewCampaignSchema`.
 
 #### Response
-Returns a JSON object of the edited campaign. Does NOT return metrics. Metrics are not editable.
+Returns a JSON object of the edited campaign.
 
 ### `DELETE` `/api/campaigns/id`
 This endpoint allows you to delete a campaign.
