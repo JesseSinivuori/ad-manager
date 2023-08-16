@@ -53,7 +53,7 @@ describe("mockCampaign API Fetch Functions", () => {
       //@ts-expect-error
       axios.post.mockRejectedValueOnce(new Error());
       await expect(createCampaign(mockNewCampaign)).rejects.toThrow(
-        "Failed to create mockCampaign."
+        "Failed to create campaign."
       );
     });
   });
@@ -72,7 +72,7 @@ describe("mockCampaign API Fetch Functions", () => {
       //@ts-expect-error
       axios.put.mockRejectedValueOnce(new Error());
       await expect(updateCampaignById("123", mockNewCampaign)).rejects.toThrow(
-        "Failed to update mockCampaign with id 123"
+        "Failed to update campaign with id 123"
       );
     });
   });
@@ -89,7 +89,7 @@ describe("mockCampaign API Fetch Functions", () => {
       //@ts-expect-error
       axios.delete.mockRejectedValueOnce(new Error());
       await expect(deleteCampaignById("123")).rejects.toThrow(
-        "Failed to delete mockCampaign with id 123"
+        "Failed to delete campaign with id 123"
       );
     });
   });
