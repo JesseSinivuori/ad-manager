@@ -11,8 +11,6 @@ jobs:
     name: Playwright Tests
     timeout-minutes: 10
     runs-on: ubuntu-latest
-    env:
-      POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -53,6 +51,8 @@ jobs:
           key: ${{ runner.os }}-next-build-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('**/*.js', '**/*.ts', '**/*.tsx', '**/*.jsx', '**/*.json', '!**/node_modules/**') }}
 
       - name: Build application
+        env:
+          POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
         if: steps.next-build.outputs.cache-hit != 'true'
         run: pnpm run build
 
@@ -66,7 +66,7 @@ jobs:
             ${{ runner.os }}-playwright-browsers-
 
       - name: Install Playwright Browsers
-        run: pnpm dlx playwright install --with-deps chromium
+        run: pnpm dlx playwright install chromium --with-deps
 
       - name: Run Playwright tests
         run: pnpm run test:e2e
