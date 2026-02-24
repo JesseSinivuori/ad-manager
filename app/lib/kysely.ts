@@ -1,11 +1,11 @@
 import { createKysely } from "@vercel/postgres-kysely";
-import { CampaignTable } from "./schema/campaigns";
-import { CampaignMetricsTable } from "./schema/campaignMetrics";
+import type { CampaignMetricsTable } from "./schema/campaignMetrics";
+import type { CampaignTable } from "./schema/campaigns";
 
 // Keys of this interface are table names.
 export interface Database {
-  campaigns: CampaignTable;
-  campaignMetrics: CampaignMetricsTable;
+	campaigns: CampaignTable;
+	campaignMetrics: CampaignMetricsTable;
 }
 
 export const db = createKysely<Database>();

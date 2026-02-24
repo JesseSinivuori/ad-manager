@@ -1,8 +1,8 @@
 const ContentSecurityPolicy = `
   default-src 'self';
   script-src 'self' ${
-    process.env.NODE_ENV === "development" ? `'unsafe-eval'` : ""
-  };
+		process.env.NODE_ENV === "development" ? `'unsafe-eval'` : ""
+	};
   style-src 'self' 'unsafe-inline';
   font-src 'self' fonts.gstatic.com;
   media-src 'self';
@@ -15,31 +15,31 @@ const ContentSecurityPolicy = `
   base-uri 'none';
 `;
 const securityHeaders = [
-  {
-    key: "Strict-Transport-Security",
-    value: "max-age=63072000; includeSubDomains; preload",
-  },
-  {
-    key: "Content-Security-Policy",
-    value: ContentSecurityPolicy.replace(/\s{2,}/g, " ").trim(),
-  },
+	{
+		key: "Strict-Transport-Security",
+		value: "max-age=63072000; includeSubDomains; preload",
+	},
+	{
+		key: "Content-Security-Policy",
+		value: ContentSecurityPolicy.replace(/\s{2,}/g, " ").trim(),
+	},
 ];
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
-  images: {
-    formats: ["image/avif", "image/webp"],
-  },
-  async headers() {
-    return [
-      {
-        // Apply these headers to all routes in your application.
-        source: "/:path*",
-        headers: securityHeaders,
-      },
-    ];
-  },
+	reactStrictMode: true,
+	images: {
+		formats: ["image/avif", "image/webp"],
+	},
+	async headers() {
+		return [
+			{
+				// Apply these headers to all routes in your application.
+				source: "/:path*",
+				headers: securityHeaders,
+			},
+		];
+	},
 };
 
 module.exports = nextConfig;

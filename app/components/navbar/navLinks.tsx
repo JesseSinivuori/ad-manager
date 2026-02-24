@@ -1,48 +1,48 @@
 "use client";
-import { link } from "@/app/style";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { link } from "@/app/style";
 
 const NavLink = ({
-  href,
-  text,
-  className,
+	href,
+	text,
+	className,
 }: {
-  href: string;
-  text: string;
-  className: string;
+	href: string;
+	text: string;
+	className: string;
 }) => {
-  return (
-    <Link href={href} className={className}>
-      {text}
-    </Link>
-  );
+	return (
+		<Link href={href} className={className}>
+			{text}
+		</Link>
+	);
 };
 
 export default function NavLinks() {
-  const pathname = usePathname();
+	const pathname = usePathname();
 
-  const navLinks = [
-    {
-      href: "/",
-      text: "Home",
-    },
-    {
-      href: "/campaigns",
-      text: "Campaigns",
-    },
-  ];
+	const navLinks = [
+		{
+			href: "/",
+			text: "Home",
+		},
+		{
+			href: "/campaigns",
+			text: "Campaigns",
+		},
+	];
 
-  return (
-    <>
-      {navLinks.map((navLink) => (
-        <NavLink
-          key={navLink.href}
-          href={navLink.href}
-          text={navLink.text}
-          className={`${pathname === navLink.href ? link.active : link.normal}`}
-        />
-      ))}
-    </>
-  );
+	return (
+		<>
+			{navLinks.map((navLink) => (
+				<NavLink
+					key={navLink.href}
+					href={navLink.href}
+					text={navLink.text}
+					className={`${pathname === navLink.href ? link.active : link.normal}`}
+				/>
+			))}
+		</>
+	);
 }
